@@ -20,7 +20,7 @@ import json
 from pkg_resources import resource_string
 import typing
 
-from scipy import random
+import numpy
 from nltk import wordnet
 
 
@@ -63,10 +63,11 @@ def _sub_words(string: str, probability: float, mapping: typing.Mapping) -> str:
     Returns:
         enriched text
     """
+    rng = numpy.random.rng()
     words = string.split()
     for pattern, sub in mapping.items():
         for index, word in enumerate(words):
-            if (word.lower() == pattern) and random.binomial(1, probability):
+            if (word.lower() == pattern) and rng.binomial(1, probability):
                 words[index] = sub
     return " ".join(word for word in words if word)
 
@@ -93,12 +94,13 @@ def add_hypernyms(string: str, p: float = 0.01) -> str:
 
     .. _wordnet: https://wordnet.princeton.edu/
     """
+    rng = numpy.random.rng()
     wn = _get_wordnet()
     words = string.split()
     lemmas = [wn.lemmatize(w) for w in words]
     for index, lemma in enumerate(lemmas):
-        if (lemma in HYPERNYMS) and random.binomial(1, p):
-            words[index] = random.choice(HYPERNYMS[lemma])
+        if (lemma in HYPERNYMS) and rng.binomial(1, p):
+            words[index] = rng.choice(HYPERNYMS[lemma])
     return " ".join(words)
 
 
@@ -124,12 +126,13 @@ def add_hyponyms(string: str, p: float = 0.01) -> str:
 
     .. _wordnet: https://wordnet.princeton.edu/
     """
+    rng = numpy.random.rng()
     wn = _get_wordnet()
     words = string.split()
     lemmas = [wn.lemmatize(w) for w in words]
     for index, lemma in enumerate(lemmas):
-        if (lemma in HYPONYMS) and random.binomial(1, p):
-            words[index] = random.choice(HYPONYMS[lemma])
+        if (lemma in HYPONYMS) and rng.binomial(1, p):
+            words[index] = rng.choice(HYPONYMS[lemma])
     return " ".join(words)
 
 
@@ -150,10 +153,11 @@ def add_misspelling(string: str, p: float = 0.1) -> str:
 
     .. _wikipedia: https://en.wikipedia.org/wiki/Wikipedia:Lists_of_common_misspellings
     """
+    rng = numpy.random.rng()
     words = string.split()
     for index, word in enumerate(words):
-        if (word in MISSPELLINGS) and random.binomial(1, p):
-            words[index] = random.choice(MISSPELLINGS[word])
+        if (word in MISSPELLINGS) and rng.binomial(1, p):
+            words[index] = rng.choice(MISSPELLINGS[word])
     return " ".join(words)
 
 
@@ -171,9 +175,10 @@ def add_parens(string: str, p: float = 0.01) -> str:
     Returns:
         enriched text
     """
+    rng = numpy.random.rng()
     words = string.split()
     for index, word in enumerate(words):
-        if random.binomial(1, p):
+        if rng.binomial(1, p):
             words[index] = "(((" + word + ")))"
     return " ".join(words)
 
@@ -201,12 +206,13 @@ def add_synonyms(string: str, p: float = 0.01) -> str:
     .. _arxiv:1509.01626 : https://arxiv.org/abs/1509.01626
     .. _wordnet: https://wordnet.princeton.edu/
     """
+    rng = numpy.random.rng()
     wn = _get_wordnet()
     words = string.split()
     lemmas = [wn.lemmatize(w) for w in words]
     for index, lemma in enumerate(lemmas):
-        if (lemma in SYNONYMS) and random.binomial(1, p):
-            words[index] = random.choice(SYNONYMS[lemma])
+        if (lemma in SYNONYMS) and rng.binomial(1, p):
+            words[index] = rng.choice(SYNONYMS[lemma])
     return " ".join(words)
 
 
@@ -262,8 +268,9 @@ def swap_words(string: str, p: float = 0.01) -> str:
     """
     words = string.split()
     index = 0
+    rng = numpy.random.rng()
     while index < len(words) - 1:
-        if random.binomial(1, p):
+        if rng.binomial(1, p):
             words[index], words[index + 1] = words[index + 1], words[index]
             index += 2
         else:

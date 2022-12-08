@@ -13,7 +13,7 @@ Importable functions include:
 """
 
 import regex
-from scipy import random
+import numpy
 import warnings
 
 
@@ -97,7 +97,8 @@ def add_applause(string: str, p: float = 0.1) -> str:
     Returns:
         enriched text
     """
-    if random.binomial(1, p):
+    rng = numpy.random.rng()
+    if rng.binomial(1, p):
         string = P_SPACE.sub("\U0001f44f", string)
     return string
 
@@ -120,8 +121,9 @@ def add_bytes(string: str, p: float = 0.1, length: int = 100) -> str:
     Returns:
         enriched text
     """
-    if random.binomial(1, p):
-        string = string + random.bytes(length).decode("utf-8", errors="replace")
+    rng = numpy.random.rng()
+    if rng.binomial(1, p):
+        string = string + rng.bytes(length).decode("utf-8", errors="replace")
     return string
 
 
@@ -141,7 +143,8 @@ def add_love(string: str, p: float = 0.1) -> str:
 
     .. _arXiv:1808.0911 : https://arxiv.org/abs/1808.09115
     """
-    if random.binomial(1, p):
+    rng = numpy.random.rng()
+    if rng.binomial(1, p):
         string = string + " love"
     return string
 
@@ -174,9 +177,10 @@ def add_backtranslation(string: str, p: float = 0.5) -> str:
 
     """
     # the fairseq models do weird stuff with empty strings
+    rng = numpy.random.rng()
     if not string:
         return string
-    if random.binomial(1, p):
+    if rng.binomial(1, p):
         t = _Translator()
         string = t.backtranslate(string)
     return string

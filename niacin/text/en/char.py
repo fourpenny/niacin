@@ -24,8 +24,7 @@ import json
 from pkg_resources import resource_string
 from string import ascii_letters, punctuation
 import typing
-
-from scipy import random
+import numpy
 
 
 LEETMAP = collections.OrderedDict(
@@ -68,13 +67,14 @@ def _sub_chars(string: str, probability: float, mapping: typing.Mapping) -> str:
     Returns:
         enriched text
     """
+    rng = numpy.random.rng()
     for pattern, sub in mapping.items():
         index = 0
         while 0 <= index < len(string):
             index = string.lower().find(pattern, index)
             if index < 0:
                 break
-            elif random.binomial(1, probability):
+            elif rng.binomial(1, probability):
                 string = string[:index] + sub + string[index + len(pattern) :]
                 index += len(sub)
             else:
@@ -97,9 +97,10 @@ def add_fat_thumbs(string: str, p: float = 0.01) -> str:
     Returns:
         enriched text
     """
+    rng = numpy.random.rng()
     for index, char in enumerate(string):
-        if char in NEIGHBORS and random.binomial(1, p):
-            new_char = random.choice(NEIGHBORS[char])
+        if char in NEIGHBORS and rng.binomial(1, p):
+            new_char = rng.choice(NEIGHBORS[char])
             string = string[:index] + new_char + string[index + 1 :]
     return string
 
@@ -117,9 +118,10 @@ def add_characters(string: str, p: float = 0.01) -> str:
     Returns:
         enriched text
     """
+    rng = numpy.random.rng()
     for index in reversed(range(len(string))):
-        if random.binomial(1, p):
-            new_char = random.choice(list(ascii_letters))
+        if rng.binomial(1, p):
+            new_char = rng.choice(list(ascii_letters))
             string = string[:index] + new_char + string[index:]
     return string
 
@@ -197,9 +199,10 @@ def add_macbook_keyboard(string: str, p: float = 0.1) -> str:
     Returns:
         enriched text
     """
+    rng = numpy.random.rng()
     for index in reversed(range(len(string))):
-        if random.binomial(1, p):
-            count = random.choice([0, 2])
+        if rng.binomial(1, p):
+            count = rng.choice([0, 2])
             string = string[:index] + string[index]*count + string[index+1:]
     return string
 
@@ -218,9 +221,10 @@ def add_whitespace(string: str, p: float = 0.01) -> str:
     Returns:
         enriched text
     """
+    rng = numpy.random.rng()
     space = " "
     for index in range(len(string), -1, -1):
-        if random.binomial(1, p):
+        if rng.binomial(1, p):
             string = string[:index] + space + string[index:]
     return string
 
@@ -235,8 +239,9 @@ def remove_characters(string: str, p: float = 0.01) -> str:
     Returns:
         enriched text
     """
+    rng = numpy.random.rng()
     for index in reversed(range(len(string))):
-        if random.binomial(1, p):
+        if rng.binomial(1, p):
             string = string[:index] + string[index + 1 :]
     return string
 
@@ -303,8 +308,9 @@ def swap_chars(string: str, p: float = 0.05) -> str:
     """
     chars = list(string)
     index = 0
+    rng = numpy.random.rng()
     while index < len(chars) - 1:
-        if random.binomial(1, p):
+        if rng.binomial(1, p):
             chars[index], chars[index + 1] = chars[index + 1], chars[index]
             index += 2
         else:
